@@ -1,9 +1,7 @@
-import './style.css'
+import config from './config'
+import './style.scss'
+import './canvas/straw'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-
-const el = document.querySelector<HTMLCanvasElement>('#canvas')!
-console.log(el)
-const canvasEl = el.getContext('2d')!
-canvasEl.fillStyle = '#ccc'
-canvasEl.fillRect(0, 0, 300, 300)
+app.style.width = config.canvas.width + 'px'
+app.style.height = config.canvas.height + 'px'
