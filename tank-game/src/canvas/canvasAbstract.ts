@@ -1,15 +1,15 @@
 import config from '../config'
-import imgUrl from '../static/images/straw/straw.png'
+import { image } from '../service/imageLoader'
 
 export default abstract class canvasAbstract {
   protected items = []
+  abstract render(): void //abstract function that requires class extended from this abstract class to have this func.
   constructor(
     protected app = document.querySelector('#app') as HTMLDivElement,
     protected el = document.createElement('canvas'),
     protected canvas = el.getContext('2d')!
   ) {
     this.createCanvas()
-    this.drawModals()
   }
 
   protected createCanvas() {
@@ -25,25 +25,27 @@ export default abstract class canvasAbstract {
     this.app.insertAdjacentElement('afterbegin', this.el)
   }
 
-  protected drawModals() {
-    const img = document.createElement('img')
-    img.src = imgUrl
-    img.onload = () => {
-      const position = this.getPosition()
-      this.canvas.drawImage(
-        img,
-        position.x,
-        position.y,
-        config.model.straw.width,
-        config.model.straw.height
-      )
-    }
+  protected drawModals(num: number) {
+    Array(num)
+      .fill('strawPatter')
+      .forEach((item) => {
+        const position = this.getPosition()
+        this.canvas.drawImage(
+          image.get('straw')!,
+          position.x,
+          position.y,
+          config.model.straw.width,
+          config.model.straw.height
+        )
+      })
   }
 
   protected getPosition() {
+    const randomWidth = Math.random() * config.canvas.width - config.model.straw.width
+    const randomHeight = Math.random() * config.canvas.height - config.model.straw.height
     return {
-      x: 30,
-      y: 50,
+      x: randomWidth >= 0 ? randomWidth : 0,
+      y: randomHeight >= 0 ? randomHeight : 0,
     }
   }
 }
