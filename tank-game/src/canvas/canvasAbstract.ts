@@ -1,5 +1,4 @@
 import config from '../config'
-import { image } from '../service/imageLoader'
 
 export default abstract class canvasAbstract {
   protected items = []
@@ -16,36 +15,50 @@ export default abstract class canvasAbstract {
     this.el.width = config.canvas.width
     this.el.height = config.canvas.height
 
-    // define canvas style
-    // this.canvas.fillStyle = '#fff'
-    // draw canvas react
-    // this.canvas.fillRect(0, 0, config.canvas.width, config.canvas.height)
-
     //insert prepared canvas el to app div.
     this.app.insertAdjacentElement('afterbegin', this.el)
   }
 
-  protected drawModals(num: number) {
+  protected drawModals(model: ModelConstructor, num: number) {
+    this.positionCollection(num).forEach(position => {
+      const instance = new model(this.canvas, position.x, position.y)
+      instance.render()
+    })
+  }
+
+  //generate position array based on model config number.
+  protected positionCollection(num: number) {
+    type positionType = {
+      x: number
+      y: number
+    }
+    const collection = [] as positionType[]
     Array(num)
-      .fill('strawPatter')
-      .forEach((item) => {
-        const position = this.getPosition()
-        this.canvas.drawImage(
-          image.get('straw')!,
-          position.x,
-          position.y,
-          config.model.straw.width,
-          config.model.straw.height
-        )
+      .fill('modelPosition')
+      .forEach(() => {
+        while (true) {
+          const position = this.getPosition()
+          const isExist = collection.some(c => c.x === position.x && c.y === position.y)
+          if (!isExist) {
+            //if newly generated position not duplicate, push to collection, then break while loop.
+            collection.push(position)
+            break
+          }
+        }
       })
+    return collection
   }
 
   protected getPosition() {
-    const randomWidth = Math.random() * config.canvas.width - config.model.straw.width
-    const randomHeight = Math.random() * config.canvas.height - config.model.straw.height
+    const randomWidth =
+      Math.floor(Math.random() * (config.canvas.width / config.model.straw.width)) *
+      config.model.straw.width
+    const randomHeight =
+      Math.floor((Math.random() * config.canvas.height) / config.model.straw.height) *
+      config.model.straw.height
     return {
-      x: randomWidth >= 0 ? randomWidth : 0,
-      y: randomHeight >= 0 ? randomHeight : 0,
+      x: randomWidth,
+      y: randomHeight,
     }
   }
 }

@@ -1,9 +1,10 @@
 import canvasAbstract from './canvasAbstract'
 import config from '../config'
+import strawModel from '../model/straw'
 
 class straw extends canvasAbstract {
   public render(): void {
-    super.drawModals(config.model.straw.num)
+    super.drawModals(strawModel, config.model.straw.num)
   }
 }
 
