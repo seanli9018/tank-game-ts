@@ -1,6 +1,8 @@
 import config from '../config'
+import position from '../service/positionGenerator'
 
 export default abstract class canvasAbstract {
+  protected models: IModel[] = []
   protected items = []
   abstract render(): void //abstract function that requires class extended from this abstract class to have this func.
   constructor(
@@ -11,6 +13,7 @@ export default abstract class canvasAbstract {
     this.createCanvas()
   }
 
+  //create canvas
   protected createCanvas() {
     this.el.width = config.canvas.width
     this.el.height = config.canvas.height
@@ -19,46 +22,17 @@ export default abstract class canvasAbstract {
     this.app.insertAdjacentElement('afterbegin', this.el)
   }
 
-  protected drawModals(model: ModelConstructor, num: number) {
-    this.positionCollection(num).forEach(position => {
+  //create models and push them to models array.
+  protected createModels(model: ModelConstructor, num: number) {
+    const positionInstance = new position()
+    positionInstance.positionCollection(num).forEach(position => {
       const instance = new model(this.canvas, position.x, position.y)
-      instance.render()
+      this.models.push(instance)
     })
   }
 
-  //generate position array based on model config number.
-  protected positionCollection(num: number) {
-    type positionType = {
-      x: number
-      y: number
-    }
-    const collection = [] as positionType[]
-    Array(num)
-      .fill('modelPosition')
-      .forEach(() => {
-        while (true) {
-          const position = this.getPosition()
-          const isExist = collection.some(c => c.x === position.x && c.y === position.y)
-          if (!isExist) {
-            //if newly generated position not duplicate, push to collection, then break while loop.
-            collection.push(position)
-            break
-          }
-        }
-      })
-    return collection
-  }
-
-  protected getPosition() {
-    const randomWidth =
-      Math.floor(Math.random() * (config.canvas.width / config.model.straw.width)) *
-      config.model.straw.width
-    const randomHeight =
-      Math.floor((Math.random() * config.canvas.height) / config.model.straw.height) *
-      config.model.straw.height
-    return {
-      x: randomWidth,
-      y: randomHeight,
-    }
+  //use model.render to draw each model in model array.
+  protected renderModels() {
+    this.models.forEach(model => model.render())
   }
 }

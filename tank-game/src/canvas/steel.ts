@@ -1,15 +1,15 @@
 import canvasAbstract from './canvasAbstract'
 import config from '../config'
-import strawModel from '../model/straw'
+import steelModel from '../model/steel'
 
-class straw extends canvasAbstract {
+class steel extends canvasAbstract {
   constructor() {
     super()
-    super.createModels(strawModel, config.model.straw.num)
+    super.createModels(steelModel, config.model.steel.num)
   }
   public render(): void {
     super.renderModels()
   }
 }
 
-export default new straw()
+export default new steel()
